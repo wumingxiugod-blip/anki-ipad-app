@@ -1,0 +1,396 @@
+/* ==========================================================================
+   Anki Native Dual-Mode Theme (Official Anki Desktop Qt6 + iPadOS AnkiMobile)
+   Preserves 100% of original React/sql.js/IndexedDB/Zstd/.apkg functionality
+   ========================================================================== */
+
+:root {
+  --anki-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --anki-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Official Anki Desktop Light */
+  --anki-bg-window: #f0f0f0;
+  --anki-bg-surface: #ffffff;
+  --anki-bg-surface-alt: #f7f7f7;
+  --anki-bg-toolbar: #ececec;
+  --anki-bg-hover: #e8edf5;
+  --anki-bg-active: #dce6f5;
+  --anki-bg-input: #ffffff;
+  --anki-border: #d4d4d4;
+  --anki-border-subtle: #e5e5e5;
+  --anki-text: #1a1a1a;
+  --anki-text-sec: #5c5c5c;
+  --anki-text-muted: #8c8c8c;
+  --anki-accent: #0066cc;
+  --anki-accent-hover: #0052a3;
+  --anki-new: #0066cc;
+  --anki-learn: #c35617;
+  --anki-review: #008000;
+  --anki-again: #c62828;
+  --anki-hard: #6e6e6e;
+  --anki-good: #2e7d32;
+  --anki-easy: #1565c0;
+}
+
+html.dark {
+  /* Official Anki Desktop 24.x Qt6 Dark */
+  --anki-bg-window: #2c2c2c;
+  --anki-bg-surface: #1e1e1e;
+  --anki-bg-surface-alt: #252525;
+  --anki-bg-toolbar: #272727;
+  --anki-bg-hover: #35383e;
+  --anki-bg-active: #3c424d;
+  --anki-bg-input: #1b1b1b;
+  --anki-border: #3e3e3e;
+  --anki-border-subtle: #323232;
+  --anki-text: #ececec;
+  --anki-text-sec: #a8a8a8;
+  --anki-text-muted: #787878;
+  --anki-accent: #4c9aff;
+  --anki-accent-hover: #3b88eb;
+  --anki-new: #77b5fe;
+  --anki-learn: #ff8a80;
+  --anki-review: #73c973;
+  --anki-again: #ef5350;
+  --anki-hard: #b0b0b0;
+  --anki-good: #66bb6a;
+  --anki-easy: #64b5f6;
+}
+
+/* iPadOS / Tablet & Mobile AnkiMobile Overrides */
+@media (max-width: 900px) {
+  :root {
+    --anki-bg-window: #f2f2f7;
+    --anki-bg-surface: #ffffff;
+    --anki-bg-surface-alt: #f9f9fb;
+    --anki-bg-toolbar: rgba(248, 248, 250, 0.94);
+    --anki-bg-hover: #ececf0;
+    --anki-bg-active: #e5e5ea;
+    --anki-border: #c6c6c8;
+    --anki-border-subtle: #e5e5ea;
+    --anki-text: #000000;
+    --anki-text-sec: #6c6c70;
+    --anki-text-muted: #8e8e93;
+    --anki-accent: #007aff;
+    --anki-new: #007aff;
+    --anki-learn: #ff3b30;
+    --anki-review: #34c759;
+    --anki-again: #ff3b30;
+    --anki-hard: #8e8e93;
+    --anki-good: #34c759;
+    --anki-easy: #007aff;
+  }
+
+  html.dark {
+    --anki-bg-window: #000000;
+    --anki-bg-surface: #1c1c1e;
+    --anki-bg-surface-alt: #141416;
+    --anki-bg-toolbar: rgba(28, 28, 30, 0.94);
+    --anki-bg-hover: #2c2c2e;
+    --anki-bg-active: #3a3a3c;
+    --anki-border: #38383a;
+    --anki-border-subtle: #2c2c2e;
+    --anki-text: #ffffff;
+    --anki-text-sec: #98989d;
+    --anki-text-muted: #636366;
+    --anki-accent: #0a84ff;
+    --anki-new: #0a84ff;
+    --anki-learn: #ff453a;
+    --anki-review: #30d158;
+    --anki-again: #ff453a;
+    --anki-hard: #98989d;
+    --anki-good: #30d158;
+    --anki-easy: #0a84ff;
+  }
+}
+
+/* Base Native Typography & Surfaces */
+html, body, #root {
+  font-family: var(--anki-font) !important;
+  background-color: var(--anki-bg-window) !important;
+  color: var(--anki-text) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular numbers for all deck & queue counters */
+.anki-native-deck-table,
+.anki-native-rate-grid {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   1. TOP NAVIGATION BAR (Native Qt6 Desktop / Translucent iPadOS)
+   ========================================================================== */
+.anki-native-topbar {
+  background: var(--anki-bg-toolbar) !important;
+  border-bottom: 1px solid var(--anki-border) !important;
+  color: var(--anki-text) !important;
+}
+
+.anki-native-topbar button {
+  border-radius: 4px !important;
+  transition: background-color 0.1s ease, color 0.1s ease !important;
+}
+
+/* ==========================================================================
+   2. DECK LIST (Crisp Native Table — No Big Rounded Cards)
+   ========================================================================== */
+.anki-native-deck-shell {
+  background: var(--anki-bg-window) !important;
+  color: var(--anki-text) !important;
+}
+
+.anki-native-deck-table {
+  background: var(--anki-bg-surface) !important;
+  border: 1px solid var(--anki-border) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  max-width: 680px !important;
+}
+
+.anki-native-deck-header {
+  background: var(--anki-bg-surface-alt) !important;
+  border-bottom: 1px solid var(--anki-border) !important;
+  color: var(--anki-text-sec) !important;
+  padding-top: 8px !important;
+  padding-bottom: 7px !important;
+}
+
+/* Flat Native Bottom Deck Action Buttons (Replace rounded-full pills) */
+.anki-native-deck-actions {
+  margin-top: 20px !important;
+  gap: 8px !important;
+}
+
+.anki-native-deck-actions button {
+  border-radius: 5px !important;
+  background: var(--anki-bg-surface) !important;
+  color: var(--anki-text) !important;
+  border: 1px solid var(--anki-border) !important;
+  box-shadow: none !important;
+  padding: 5px 14px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.anki-native-deck-actions button:hover {
+  background: var(--anki-bg-hover) !important;
+}
+
+@media (max-width: 900px) {
+  .anki-native-deck-table {
+    border-radius: 10px !important;
+    border-width: 0.5px !important;
+  }
+  .anki-native-deck-actions button {
+    border-radius: 8px !important;
+    padding: 7px 14px !important;
+  }
+}
+
+/* ==========================================================================
+   3. REVIEWER (Pure Full-Surface Canvas + Native Desktop / iPadOS Footer)
+   ========================================================================== */
+.anki-native-review-main {
+  background: var(--anki-bg-surface) !important;
+  padding: 0 !important;
+}
+
+html.dark .anki-native-review-main {
+  background: var(--anki-bg-surface) !important;
+}
+
+@media (max-width: 900px) {
+  html.dark .anki-native-review-main {
+    background: #000000 !important;
+  }
+}
+
+/* Remove floating rounded-3xl shadow card -> Pure Anki canvas */
+.anki-native-review-card {
+  max-width: 100% !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 20px 24px !important;
+}
+
+.anki-rendered-card {
+  max-width: 720px !important;
+  margin: 0 auto !important;
+  font-family: var(--anki-font) !important;
+}
+
+/* Reviewer Footer */
+.anki-native-review-footer {
+  background: var(--anki-bg-toolbar) !important;
+  border-top: 1px solid var(--anki-border) !important;
+  padding: 10px 16px !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Desktop Show Answer Button (Compact Native Primary) */
+.anki-native-show-answer {
+  width: auto !important;
+  min-width: 180px !important;
+  margin: 0 auto !important;
+  padding: 7px 26px !important;
+  border-radius: 5px !important;
+  background: var(--anki-accent) !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  border: 1px solid var(--anki-accent) !important;
+}
+
+.anki-native-show-answer:hover {
+  background: var(--anki-accent-hover) !important;
+}
+
+/* Desktop 4-Button Rating Bar (Compact Native Qt Buttons) */
+.anki-native-rate-grid {
+  max-width: 460px !important;
+  margin: 0 auto !important;
+  gap: 8px !important;
+}
+
+.anki-native-rate-btn {
+  border-radius: 5px !important;
+  padding: 6px 10px !important;
+  background: var(--anki-bg-surface) !important;
+  border: 1px solid var(--anki-border) !important;
+  box-shadow: none !important;
+}
+
+.anki-native-rate-btn:hover {
+  background: var(--anki-bg-hover) !important;
+}
+
+.anki-native-rate-btn.rate-again span:nth-child(2) { color: var(--anki-again) !important; }
+.anki-native-rate-btn.rate-hard span:nth-child(2)  { color: var(--anki-hard) !important; }
+.anki-native-rate-btn.rate-good {
+  border-color: var(--anki-accent) !important;
+}
+.anki-native-rate-btn.rate-good span:nth-child(2)  { color: var(--anki-good) !important; }
+.anki-native-rate-btn.rate-easy span:nth-child(2)  { color: var(--anki-easy) !important; }
+
+/* iPadOS AnkiMobile Full-Bleed Edge-to-Edge Reviewer Footer */
+@media (max-width: 900px) {
+  .anki-native-review-footer {
+    padding: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    border-top: 0.5px solid var(--anki-border) !important;
+  }
+
+  .anki-native-review-footer > div {
+    max-width: 100% !important;
+  }
+
+  .anki-native-show-answer {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 54px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--anki-accent) !important;
+    font-size: 17px !important;
+  }
+
+  .anki-native-show-answer:active {
+    background: var(--anki-bg-hover) !important;
+  }
+
+  .anki-native-show-answer kbd {
+    display: none !important;
+  }
+
+  .anki-native-rate-grid {
+    max-width: 100% !important;
+    gap: 0 !important;
+  }
+
+  .anki-native-rate-btn {
+    border-radius: 0 !important;
+    border: none !important;
+    border-right: 0.5px solid var(--anki-border-subtle) !important;
+    background: transparent !important;
+    height: 58px !important;
+    padding: 4px 2px !important;
+  }
+
+  .anki-native-rate-btn:last-child {
+    border-right: none !important;
+  }
+
+  .anki-native-rate-btn:active {
+    background: var(--anki-bg-hover) !important;
+  }
+}
+
+/* ==========================================================================
+   4. SECONDARY MODALS & POPOVERS CONSISTENCY
+   ========================================================================== */
+.rounded-3xl {
+  border-radius: 10px !important;
+}
+
+.rounded-2xl {
+  border-radius: 8px !important;
+}
+
+.shadow-2xl, .shadow-xl {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* Header & Centered Qt Tab Strip (Adapts cleanly to BOTH Light & Dark mode) */
+.anki-native-header-wrap {
+  background: var(--anki-bg-toolbar) !important;
+  color: var(--anki-text) !important;
+  border-bottom: 1px solid var(--anki-border) !important;
+}
+.anki-native-tabbar {
+  background: var(--anki-bg-toolbar) !important;
+  height: 40px !important;
+}
+.anki-native-tabgroup {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 4px !important;
+}
+.anki-native-tabgroup button {
+  color: var(--anki-text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 4px 12px !important;
+  border-radius: 4px !important;
+  border: 1px solid transparent !important;
+}
+.anki-native-tabgroup button:hover {
+  background: var(--anki-bg-hover) !important;
+  color: var(--anki-text) !important;
+}
+/* Light-mode readable deck rows */
+html:not(.dark) .anki-native-deck-table [class*="text-stone-200"],
+html:not(.dark) .anki-native-deck-table [class*="text-stone-300"],
+html:not(.dark) .anki-native-topbar [class*="text-stone-200"],
+html:not(.dark) .anki-native-topbar [class*="text-stone-400"] {
+  color: var(--anki-text) !important;
+}
+html:not(.dark) .anki-native-deck-table [class*="border-zinc-800"] {
+  border-color: var(--anki-border-subtle) !important;
+}
+html:not(.dark) .anki-native-deck-table [class*="hover:bg-[#343438]"]:hover,
+html:not(.dark) .anki-native-deck-table [class*="bg-[#38383c]"] {
+  background: var(--anki-bg-hover) !important;
+  color: var(--anki-text) !important;
+}
+html:not(.dark) .anki-native-deck-table [class*="text-[#38bdf8]"] { color: var(--anki-new) !important; }
+html:not(.dark) .anki-native-deck-table [class*="text-[#f87171]"] { color: var(--anki-learn) !important; }
+html:not(.dark) .anki-native-deck-table [class*="text-[#4ade80]"] { color: var(--anki-review) !important; }
+html:not(.dark) .anki-native-deck-table [class*="text-zinc-600"] { color: #a0a0a0 !important; }
