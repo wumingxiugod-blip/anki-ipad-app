@@ -447,3 +447,38 @@ html:not(.dark) .anki-native-deck-table [class*="text-zinc-600"] { color: #a0a0a
   height: auto !important;
   display: block !important;
 }
+
+/* ==========================================================================
+   6. PREFERENCES RUNTIME HOOKS (減少干擾 / 複習顯示選項)
+   ========================================================================== */
+html.anki-pref-reduce-motion *,
+html.anki-pref-reduce-motion *::before,
+html.anki-pref-reduce-motion *::after {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+
+html.anki-pref-hide-top .anki-native-header-wrap {
+  display: none !important;
+}
+
+html.anki-pref-hide-bottom .anki-native-review-footer {
+  opacity: 0.04;
+  transition: opacity 0.15s ease !important;
+}
+html.anki-pref-hide-bottom .anki-native-review-footer:hover {
+  opacity: 1;
+}
+
+html.anki-pref-hide-intervals .anki-native-rate-btn span:first-child {
+  display: none !important;
+}
+
+html.anki-pref-hide-audio .anki-sound-play-btn,
+html.anki-pref-hide-audio .anki-tts-play-btn {
+  display: none !important;
+}
+
+html.anki-pref-minimalist .anki-native-deck-actions {
+  opacity: 0.65;
+}
