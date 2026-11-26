@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anki-ipad-v12';
+const CACHE_NAME = 'anki-ipad-v15';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

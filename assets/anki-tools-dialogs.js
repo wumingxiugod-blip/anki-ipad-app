@@ -573,7 +573,7 @@
       // Parse quoted and space-separated tokens
       var tokens = (qStr.match(/"[^"]+"|\S+/g) || []).map(function (t) { return t.replace(/^"|"$/g, ''); });
 
-      var matched = allCards.filter(function (cd) {
+      var matched = window.__ANKI_EVAL_SEARCH__ ? allCards.filter(function (cd) {return window.__ANKI_EVAL_SEARCH__(qStr, { card: cd, note: noteMap.get(cd.nid), deckName: deckMap.get(cd.did) || "" });}) : allCards.filter(function (cd) {
         var dName = (deckMap.get(cd.did) || '').toLowerCase();
         var nt = noteMap.get(cd.nid);
         var text = nt ? ((nt.flds || []).join(' ') + ' ' + (nt.tags || []).join(' ')).toLowerCase() : '';

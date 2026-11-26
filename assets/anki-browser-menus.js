@@ -177,6 +177,8 @@
       addSep();
       addItem('建立篩選牌組...', 'Ctrl+G', function () { window.__ANKI_OPEN_FILTERED_DECK__ && window.__ANKI_OPEN_FILTERED_DECK__(); });
     } else if (menuId === 'view') {
+      addItem('預覽卡片...', 'Ctrl+Shift+P', function () { openPreviewDialog(ctx); });
+      addSep();
       addItem('切換卡片/筆記', 'Ctrl+Alt+T', function () { ctx.toggleMode && ctx.toggleMode(); });
       addItem('切換全螢幕顯示(F)', 'F11', function () {
         document.fullscreenElement ? document.exitFullscreen().catch(function () {}) : document.documentElement.requestFullscreen().catch(function () {});
@@ -363,4 +365,141 @@
   }
 
   window.__ANKI_OPEN_BROWSER_MENU__ = openBrowserMenu;
+
+  // =========================================================================
+  // OFFICIAL BROWSER PREVIEW WINDOW (預覽: 重播音訊 / 僅背面 / < / >)
+  // =========================================================================
+  async function openPreviewDialog(ctx) {
+    var rows = ctx && ctx.rows ? ctx.rows : [];
+    if (!rows.length) { toast('目前沒有可預覽的卡片'); return; }
+    var renderFn = window.__ANKI_RENDER_CARD__;
+    if (!renderFn) { toast('卡片渲染器尚未就緒'); return; }
+
+    var old = document.getElementById('anki-preview-modal');
+    if (old) old.remove();
+
+    var idx = ctx.selected ? rows.findIndex(function (r) { return r.card.id === ctx.selected.card.id; }) : 0;
+    if (idx < 0) idx = 0;
+    var backOnly = false;
+    var side = 'front'; // 'front' | 'back'
+
+    var c = theme();
+    var ov = document.createElement('div');
+    ov.id = 'anki-preview-modal';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,0.62);display:flex;align-items:center;justify-content:center;padding:16px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;';
+
+    var win = document.createElement('div');
+    win.style.cssText = 'width:100%;max-width:860px;height:82vh;background:' + (document.documentElement.classList.contains('dark') ? '#0f172a' : '#f8fafc') + ';color:' + c.text + ';border:1px solid ' + c.border + ';border-radius:8px;box-shadow:0 20px 52px rgba(0,0,0,0.5);display:flex;flex-direction:column;overflow:hidden;';
+
+    win.innerHTML =
+      '<div style="padding:8px 14px;background:' + (document.documentElement.classList.contains('dark') ? '#242424' : '#e6e6e6') + ';border-bottom:1px solid ' + c.border + ';display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">' +
+        '<span id="pv-title" style="font-size:13px;font-weight:600;">預覽</span>' +
+        '<button type="button" id="pv-x" style="border:none;background:transparent;color:' + c.muted + ';font-size:15px;cursor:pointer;padding:2px 6px;">✕</button>' +
+      '</div>' +
+      '<div id="pv-stage" style="flex:1;min-height:0;overflow-y:auto;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;-webkit-overflow-scrolling:touch;"></div>' +
+      '<div style="padding:8px 14px;background:' + (document.documentElement.classList.contains('dark') ? '#262626' : '#ebebeb') + ';border-top:1px solid ' + c.border + ';display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0;">' +
+        '<span id="pv-pos" style="font-size:12px;color:' + c.muted + ';"></span>' +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" id="pv-audio" style="padding:5px 14px;font-size:12px;border-radius:5px;border:1px solid ' + c.border + ';background:' + c.bgBtn + ';color:' + c.text + ';cursor:pointer;">重播音訊</button>' +
+          '<label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:' + c.text + ';cursor:pointer;user-select:none;margin:0 4px;"><input type="checkbox" id="pv-backonly" style="accent-color:' + c.accent + ';" /><span>僅背面</span></label>' +
+          '<button type="button" id="pv-prev" style="min-width:56px;padding:5px 12px;font-size:13px;border-radius:5px;border:1px solid ' + c.border + ';background:' + c.bgBtn + ';color:' + c.text + ';cursor:pointer;">&lt;</button>' +
+          '<button type="button" id="pv-next" style="min-width:56px;padding:5px 12px;font-size:13px;border-radius:5px;border:1.5px solid ' + c.accent + ';background:' + c.bgBtn + ';color:' + c.text + ';cursor:pointer;">&gt;</button>' +
+        '</div>' +
+      '</div>';
+
+    ov.appendChild(win);
+    document.body.appendChild(ov);
+
+    async function renderCard() {
+      var row = rows[idx];
+      if (!row) return;
+      var isAns = backOnly || side === 'back';
+      var isDark = document.documentElement.classList.contains('dark');
+      win.querySelector('#pv-title').textContent = '預覽 — ' + (isAns ? '背面' : '正面');
+      win.querySelector('#pv-pos').textContent = (idx + 1) + ' / ' + rows.length + ' · ' + (row.deck ? row.deck.name : '');
+
+      var rendered = await renderFn({
+        model: row.model,
+        note: row.note,
+        cardOrd: row.card.ord || 0,
+        isAnswer: isAns
+      });
+
+      var stage = win.querySelector('#pv-stage');
+      stage.innerHTML =
+        '<style>' + (rendered.css || '') + ' .anki-preview-card .io-inner img{margin:0!important;border-radius:0!important;max-width:100%!important;max-height:58vh!important;width:auto!important;height:auto!important;}</style>' +
+        '<div class="card anki-preview-card ' + (isDark ? 'nightMode night_mode' : '') + '" style="width:100%;max-width:820px;margin:auto 0;background:transparent;">' +
+          rendered.html +
+        '</div>';
+
+      // Execute embedded card scripts (MCQ / Grid / Order)
+      stage.querySelectorAll('script').forEach(function (sc) {
+        var ns = document.createElement('script');
+        for (var i = 0; i < sc.attributes.length; i++) {
+          ns.setAttribute(sc.attributes[i].name, sc.attributes[i].value);
+        }
+        ns.textContent = sc.textContent;
+        try { sc.parentNode && sc.parentNode.replaceChild(ns, sc); } catch (e) {}
+      });
+
+      if (ctx.selectRow) ctx.selectRow(row.card.id);
+    }
+
+    function goNext() {
+      if (!backOnly && side === 'front') {
+        side = 'back';
+      } else if (idx < rows.length - 1) {
+        idx++;
+        side = backOnly ? 'back' : 'front';
+      } else {
+        toast('已到達最後一張卡片');
+        return;
+      }
+      renderCard();
+    }
+
+    function goPrev() {
+      if (!backOnly && side === 'back') {
+        side = 'front';
+      } else if (idx > 0) {
+        idx--;
+        side = 'back';
+      } else {
+        toast('已到達第一張卡片');
+        return;
+      }
+      renderCard();
+    }
+
+    function onKey(e) {
+      if (!document.getElementById('anki-preview-modal')) { window.removeEventListener('keydown', onKey); return; }
+      if (e.key === 'Escape') { close(); }
+      else if (e.key === 'ArrowRight' || e.code === 'Space') { e.preventDefault(); goNext(); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+    }
+    function close() {
+      window.removeEventListener('keydown', onKey);
+      ov.remove();
+    }
+
+    window.addEventListener('keydown', onKey);
+    ov.onclick = function (e) { if (e.target === ov) close(); };
+    win.querySelector('#pv-x').onclick = close;
+    win.querySelector('#pv-next').onclick = goNext;
+    win.querySelector('#pv-prev').onclick = goPrev;
+    win.querySelector('#pv-backonly').onchange = function (e) {
+      backOnly = e.target.checked;
+      side = backOnly ? 'back' : 'front';
+      renderCard();
+    };
+    win.querySelector('#pv-audio').onclick = function () {
+      var btn = win.querySelector('.anki-sound-play-btn') || win.querySelector('.anki-tts-play-btn');
+      if (btn) btn.click();
+      else toast('此卡片沒有音訊');
+    };
+
+    renderCard();
+  }
+
+  window.__ANKI_OPEN_PREVIEW__ = openPreviewDialog;
 })();
